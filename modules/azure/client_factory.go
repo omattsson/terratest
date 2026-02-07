@@ -11,21 +11,14 @@ package azure
 // snippet-tag-start::client_factory_example.imports
 
 import (
-	"fmt"
 	"os"
 	"reflect"
-	"strings"
 
 	"github.com/Azure/azure-sdk-for-go/profiles/latest/frontdoor/mgmt/frontdoor"
 	"github.com/Azure/azure-sdk-for-go/profiles/latest/privatedns/mgmt/privatedns"
 	"github.com/Azure/azure-sdk-for-go/profiles/latest/resources/mgmt/resources"
 	"github.com/Azure/azure-sdk-for-go/profiles/preview/cosmos-db/mgmt/documentdb"
 	"github.com/Azure/azure-sdk-for-go/profiles/preview/preview/monitor/mgmt/insights"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
-	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/appcontainers/armappcontainers/v3"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/appservice/armappservice/v2"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/datafactory/armdatafactory/v9"
@@ -169,23 +162,15 @@ func getArmKeyVaultClientFactory(subscriptionID string) (*armkeyvault.ClientFact
 	if err != nil {
 		return nil, err
 	}
-	clientCloudConfig, err := getClientCloudConfig()
+	cred, err := NewAzureCredential()
 	if err != nil {
 		return nil, err
 	}
-	cred, err := azidentity.NewDefaultAzureCredential(&azidentity.DefaultAzureCredentialOptions{
-		ClientOptions: azcore.ClientOptions{
-			Cloud: clientCloudConfig,
-		},
-	})
+	opts, err := getArmClientOptions()
 	if err != nil {
 		return nil, err
 	}
-	return armkeyvault.NewClientFactory(targetSubscriptionID, cred, &arm.ClientOptions{
-		ClientOptions: policy.ClientOptions{
-			Cloud: clientCloudConfig,
-		},
-	})
+	return armkeyvault.NewClientFactory(targetSubscriptionID, cred, opts)
 }
 
 // getArmPostgreSQLClientFactory gets an arm postgresql client factory
@@ -194,23 +179,15 @@ func getArmPostgreSQLClientFactory(subscriptionID string) (*armpostgresql.Client
 	if err != nil {
 		return nil, err
 	}
-	clientCloudConfig, err := getClientCloudConfig()
+	cred, err := NewAzureCredential()
 	if err != nil {
 		return nil, err
 	}
-	cred, err := azidentity.NewDefaultAzureCredential(&azidentity.DefaultAzureCredentialOptions{
-		ClientOptions: azcore.ClientOptions{
-			Cloud: clientCloudConfig,
-		},
-	})
+	opts, err := getArmClientOptions()
 	if err != nil {
 		return nil, err
 	}
-	return armpostgresql.NewClientFactory(targetSubscriptionID, cred, &arm.ClientOptions{
-		ClientOptions: policy.ClientOptions{
-			Cloud: clientCloudConfig,
-		},
-	})
+	return armpostgresql.NewClientFactory(targetSubscriptionID, cred, opts)
 }
 
 // CreateStorageAccountClientE creates a storage account client.
@@ -363,23 +340,15 @@ func getArmSQLClientFactory(subscriptionID string) (*armsql.ClientFactory, error
 	if err != nil {
 		return nil, err
 	}
-	clientCloudConfig, err := getClientCloudConfig()
+	cred, err := NewAzureCredential()
 	if err != nil {
 		return nil, err
 	}
-	cred, err := azidentity.NewDefaultAzureCredential(&azidentity.DefaultAzureCredentialOptions{
-		ClientOptions: azcore.ClientOptions{
-			Cloud: clientCloudConfig,
-		},
-	})
+	opts, err := getArmClientOptions()
 	if err != nil {
 		return nil, err
 	}
-	return armsql.NewClientFactory(targetSubscriptionID, cred, &arm.ClientOptions{
-		ClientOptions: policy.ClientOptions{
-			Cloud: clientCloudConfig,
-		},
-	})
+	return armsql.NewClientFactory(targetSubscriptionID, cred, opts)
 }
 
 // CreateDatabaseClient is a helper function that will create and setup a SQL DB client
@@ -406,23 +375,15 @@ func getArmMySQLClientFactory(subscriptionID string) (*armmysql.ClientFactory, e
 	if err != nil {
 		return nil, err
 	}
-	clientCloudConfig, err := getClientCloudConfig()
+	cred, err := NewAzureCredential()
 	if err != nil {
 		return nil, err
 	}
-	cred, err := azidentity.NewDefaultAzureCredential(&azidentity.DefaultAzureCredentialOptions{
-		ClientOptions: azcore.ClientOptions{
-			Cloud: clientCloudConfig,
-		},
-	})
+	opts, err := getArmClientOptions()
 	if err != nil {
 		return nil, err
 	}
-	return armmysql.NewClientFactory(targetSubscriptionID, cred, &arm.ClientOptions{
-		ClientOptions: policy.ClientOptions{
-			Cloud: clientCloudConfig,
-		},
-	})
+	return armmysql.NewClientFactory(targetSubscriptionID, cred, opts)
 }
 
 // CreateDisksClientE returns a new Disks client in the specified Azure Subscription
@@ -733,23 +694,15 @@ func getArmAppServiceClientFactory(subscriptionID string) (*armappservice.Client
 	if err != nil {
 		return nil, err
 	}
-	clientCloudConfig, err := getClientCloudConfig()
+	cred, err := NewAzureCredential()
 	if err != nil {
 		return nil, err
 	}
-	cred, err := azidentity.NewDefaultAzureCredential(&azidentity.DefaultAzureCredentialOptions{
-		ClientOptions: azcore.ClientOptions{
-			Cloud: clientCloudConfig,
-		},
-	})
+	opts, err := getArmClientOptions()
 	if err != nil {
 		return nil, err
 	}
-	return armappservice.NewClientFactory(targetSubscriptionID, cred, &arm.ClientOptions{
-		ClientOptions: policy.ClientOptions{
-			Cloud: clientCloudConfig,
-		},
-	})
+	return armappservice.NewClientFactory(targetSubscriptionID, cred, opts)
 }
 
 // CreateContainerRegistryClientE returns an ACR client instance configured with the
@@ -856,23 +809,15 @@ func getArmSynapseClientFactory(subscriptionID string) (*armsynapse.ClientFactor
 	if err != nil {
 		return nil, err
 	}
-	clientCloudConfig, err := getClientCloudConfig()
+	cred, err := NewAzureCredential()
 	if err != nil {
 		return nil, err
 	}
-	cred, err := azidentity.NewDefaultAzureCredential(&azidentity.DefaultAzureCredentialOptions{
-		ClientOptions: azcore.ClientOptions{
-			Cloud: clientCloudConfig,
-		},
-	})
+	opts, err := getArmClientOptions()
 	if err != nil {
 		return nil, err
 	}
-	return armsynapse.NewClientFactory(targetSubscriptionID, cred, &arm.ClientOptions{
-		ClientOptions: policy.ClientOptions{
-			Cloud: clientCloudConfig,
-		},
-	})
+	return armsynapse.NewClientFactory(targetSubscriptionID, cred, opts)
 }
 
 // CreateDataFactoriesClientE is a helper function that will setup a data factory client.
@@ -1003,23 +948,15 @@ func getArmResourcesClientFactory(subscriptionID string) (*armresources.ClientFa
 	if err != nil {
 		return nil, err
 	}
-	clientCloudConfig, err := getClientCloudConfig()
+	cred, err := NewAzureCredential()
 	if err != nil {
 		return nil, err
 	}
-	cred, err := azidentity.NewDefaultAzureCredential(&azidentity.DefaultAzureCredentialOptions{
-		ClientOptions: azcore.ClientOptions{
-			Cloud: clientCloudConfig,
-		},
-	})
+	opts, err := getArmClientOptions()
 	if err != nil {
 		return nil, err
 	}
-	return armresources.NewClientFactory(targetSubscriptionID, cred, &arm.ClientOptions{
-		ClientOptions: policy.ClientOptions{
-			Cloud: clientCloudConfig,
-		},
-	})
+	return armresources.NewClientFactory(targetSubscriptionID, cred, opts)
 }
 
 // getArmAppContainersClientFactory gets an arm app containers client factory
@@ -1028,23 +965,15 @@ func getArmAppContainersClientFactory(subscriptionID string) (*armappcontainers.
 	if err != nil {
 		return nil, err
 	}
-	clientCloudConfig, err := getClientCloudConfig()
+	cred, err := NewAzureCredential()
 	if err != nil {
 		return nil, err
 	}
-	cred, err := azidentity.NewDefaultAzureCredential(&azidentity.DefaultAzureCredentialOptions{
-		ClientOptions: azcore.ClientOptions{
-			Cloud: clientCloudConfig,
-		},
-	})
+	opts, err := getArmClientOptions()
 	if err != nil {
 		return nil, err
 	}
-	return armappcontainers.NewClientFactory(targetSubscriptionID, cred, &arm.ClientOptions{
-		ClientOptions: policy.ClientOptions{
-			Cloud: clientCloudConfig,
-		},
-	})
+	return armappcontainers.NewClientFactory(targetSubscriptionID, cred, opts)
 }
 
 // getArmDataFactoryClientFactory gets an arm data factory client factory
@@ -1053,57 +982,13 @@ func getArmDataFactoryClientFactory(subscriptionID string) (*armdatafactory.Clie
 	if err != nil {
 		return nil, err
 	}
-	clientCloudConfig, err := getClientCloudConfig()
+	cred, err := NewAzureCredential()
 	if err != nil {
 		return nil, err
 	}
-	cred, err := azidentity.NewDefaultAzureCredential(&azidentity.DefaultAzureCredentialOptions{
-		ClientOptions: azcore.ClientOptions{
-			Cloud: clientCloudConfig,
-		},
-	})
+	opts, err := getArmClientOptions()
 	if err != nil {
 		return nil, err
 	}
-	return armdatafactory.NewClientFactory(targetSubscriptionID, cred, &arm.ClientOptions{
-		ClientOptions: policy.ClientOptions{
-			Cloud: clientCloudConfig,
-		},
-	})
-}
-
-func getClientCloudConfig() (cloud.Configuration, error) {
-	envName := getDefaultEnvironmentName()
-	switch strings.ToUpper(envName) {
-	case "AZURECHINACLOUD":
-		return cloud.AzureChina, nil
-	case "AZUREUSGOVERNMENTCLOUD":
-		return cloud.AzureGovernment, nil
-	case "AZUREPUBLICCLOUD":
-		return cloud.AzurePublic, nil
-	case "AZURESTACKCLOUD":
-		env, err := autorestAzure.EnvironmentFromName(envName)
-		if err != nil {
-			return cloud.Configuration{}, err
-		}
-		c := cloud.Configuration{
-			ActiveDirectoryAuthorityHost: env.ActiveDirectoryEndpoint,
-			Services: map[cloud.ServiceName]cloud.ServiceConfiguration{
-				cloud.ResourceManager: {
-					Audience: env.TokenAudience,
-					Endpoint: env.ResourceManagerEndpoint,
-				},
-			},
-		}
-		return c, nil
-	default:
-		return cloud.Configuration{},
-			fmt.Errorf("no cloud environment matching the name: %s. "+
-				"Available values are: "+
-				"AzurePublicCloud (default), "+
-				"AzureUSGovernmentCloud, "+
-				"AzureChinaCloud or "+
-				"AzureStackCloud",
-				envName)
-	}
+	return armdatafactory.NewClientFactory(targetSubscriptionID, cred, opts)
 }

@@ -5,18 +5,12 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/resourcemanager/keyvault/armkeyvault"
 	"github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azcertificates"
 	"github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azkeys"
 	"github.com/Azure/azure-sdk-for-go/sdk/security/keyvault/azsecrets"
 	"github.com/stretchr/testify/require"
 )
-
-// NewAzureCredentialE creates a new Azure credential using DefaultAzureCredential.
-func NewAzureCredentialE() (*azidentity.DefaultAzureCredential, error) {
-	return azidentity.NewDefaultAzureCredential(nil)
-}
 
 // KeyVaultSecretExists indicates whether a key vault secret exists; otherwise false
 // This function would fail the test if there is an error.
@@ -113,7 +107,7 @@ func GetKeyVaultSecretsClientE(keyVaultName string) (*azsecrets.Client, error) {
 	}
 	vaultURL := fmt.Sprintf("https://%s.%s", keyVaultName, keyVaultSuffix)
 
-	cred, err := NewAzureCredentialE()
+	cred, err := NewAzureCredential()
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +123,7 @@ func GetKeyVaultKeysClientE(keyVaultName string) (*azkeys.Client, error) {
 	}
 	vaultURL := fmt.Sprintf("https://%s.%s", keyVaultName, keyVaultSuffix)
 
-	cred, err := NewAzureCredentialE()
+	cred, err := NewAzureCredential()
 	if err != nil {
 		return nil, err
 	}
@@ -145,7 +139,7 @@ func GetKeyVaultCertificatesClientE(keyVaultName string) (*azcertificates.Client
 	}
 	vaultURL := fmt.Sprintf("https://%s.%s", keyVaultName, keyVaultSuffix)
 
-	cred, err := NewAzureCredentialE()
+	cred, err := NewAzureCredential()
 	if err != nil {
 		return nil, err
 	}

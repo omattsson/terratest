@@ -3,6 +3,8 @@ package azure
 import (
 	"os"
 
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
+	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/go-autorest/autorest"
 	az "github.com/Azure/go-autorest/autorest/azure"
 	"github.com/Azure/go-autorest/autorest/azure/auth"
@@ -21,6 +23,7 @@ const (
 
 // NewAuthorizer creates an Azure authorizer adhering to standard auth mechanisms provided by the Azure Go SDK
 // See Azure Go Auth docs here: https://docs.microsoft.com/en-us/go/azure/azure-sdk-go-authorization
+// Deprecated: Use NewAzureCredential instead.
 func NewAuthorizer() (*autorest.Authorizer, error) {
 	// Carry out env var lookups
 	_, clientIDExists := os.LookupEnv(AuthFromEnvClient)
@@ -38,4 +41,18 @@ func NewAuthorizer() (*autorest.Authorizer, error) {
 		authorizer, err := auth.NewAuthorizerFromCLI()
 		return &authorizer, err
 	}
+}
+
+// NewAzureCredential creates a DefaultAzureCredential configured for the current Azure cloud.
+func NewAzureCredential() (*azidentity.DefaultAzureCredential, error) {
+	clientCloudConfig, err := getClientCloudConfig()
+	if err != nil {
+		return nil, err
+	}
+
+	return azidentity.NewDefaultAzureCredential(&azidentity.DefaultAzureCredentialOptions{
+		ClientOptions: azcore.ClientOptions{
+			Cloud: clientCloudConfig,
+		},
+	})
 }
